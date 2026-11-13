@@ -422,8 +422,9 @@ def init():
 def update(frame):
     particle.update_position()
     dot.set_data([particle.r[0]], [particle.r[1]])
+    if particle.r[0] > 9.95 or particle.r[0] < -9.95:
+        particle.v = -1*particle.v
     return dot,
-
 # Create animation
 ani = FuncAnimation(fig, update, frames=range(200), init_func=init, blit=True, interval=50)
 
@@ -447,7 +448,8 @@ Controleer je eigen antwoord door de functie hierboven even te vervangen door de
 def update(frame):
     particle.update_position()
     dot.set_data([particle.r[0]], [particle.r[1]])
-    if 
+    if particle.r[0] > 10:
+        particle.r[0] = -10
     return dot,         
 ```
 
@@ -463,7 +465,8 @@ Test wederom je code door de vernieuwde functie hierboven te plakken.
 def update(frame):
     particle.update_position()
     dot.set_data([particle.r[0]], [particle.r[1]])
-### YOUR CODE HERE ###
+    if particle.r[0] > 9.95 or particle.r[0] < -9.95:
+        particle.v = -1*particle.v
     return dot,
 ```
 
@@ -476,9 +479,9 @@ Verander nu de code zodanig dat de beginsnelheid gegeven wordt door $\vec{v}=5\h
 ```python
 # Simulation parameters
 dt = 0.1         # time step
-num_steps = 500  # number of time steps
+num_steps = 1000  # number of time steps
 
-### YOUR CODE HERE ###
+particle = ParticleClass(m=1.0, v=[5.0, 4.0], r=[0.0, 0.0],R=1.0) 
 
 # Create the figure and axis
 fig, ax = plt.subplots()
@@ -501,7 +504,10 @@ def init():
 def update(frame):
     particle.update_position()
     dot.set_data([particle.r[0]], [particle.r[1]])
-    ### YOUR CODE HERE ###
+    if particle.r[0] > 9.95 or particle.r[0] < -9.95:
+        particle.v[0] = -1*particle.v[0]
+    if particle.r[1] > 9.95 or particle.r[1] < -9.95:
+        particle.v[1] = -1*particle.v[1]
     return dot,
 
 # Create animation
