@@ -62,7 +62,53 @@ plt.figure()
 
 plt.xlabel('$t$(s)')
 plt.ylabel('$x$(m)')
+plt.axhline(y=np.max(x_2), linestyle='--')
+plt.plot(t,x_1,'r.', markersize=1, label='fietser 1')
+plt.plot(t,x_2,'b.', markersize=1, label='fietser 2')
 
+plt.show()
+
+max_x_tweede_fiets_klein_interval_model=np.max(x_2)
+```
+
+Wat op zou kunnen vallen is dat de snelheid in een cel constant gehouden wordt ($x_i = v_i\cdot\Delta t$), terwijl de snelheid tijdens het tijdsinterval $\Delta t$ toeneemt. De oplossing is dus een benadering van de exacte oplossing, maar door deze methode (Euler explicit forward), moeten we wel voorzichtig zijn met de grootte van het tijdsinterval.
+
+```{exercise}
+Maak het tijdsinterval $dt$ groter en vergelijk de afgelegde weg in de tien seconde. Wat gebeurt er met de afgelegde weg als we $dt$ groter maken? Is dat logisch vanuit gezien de natuurkunde? En gezien de methode van discretisatie? Leg uit.p```
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Nieuwe beginwaarden
+dt_nieuw = 0.25*4          #s
+t_e = 10                   #s
+N = int(t_e/dt_nieuw)+1
+t = np.arange(0,t_e+dt_nieuw,dt_nieuw) #s
+
+# fietser 1
+x_1 = np.zeros(N)          #m     maakt array van lengte N met alleen maar waarde 0.
+v_1 = 5                    #m/s
+
+# fietser 2
+x_2 = np.zeros(N)          #m     
+v_2 = np.zeros(N)          #m/s     
+a_2 = .5                   #m/s^2     
+
+# Uitvoeren van de simulatie
+for i in range(0,N-1):
+    x_1[i+1] = x_1[i] + v_1*dt_nieuw
+    
+    x_2[i+1] = x_2[i] + v_2[i]*dt_nieuw
+    v_2[i+1] = v_2[i] + a_2*dt_nieuw
+
+# Plotten van de gegevens.    
+plt.figure()
+
+plt.xlabel('$t$(s)')
+plt.ylabel('$x$(m)')
+max_x_tweede_fiets_groot_interval_model=np.max(x_2)
+plt.axhline(y=max_x_tweede_fiets_groot_interval_model, linestyle='--')
 plt.plot(t,x_1,'r.', markersize=1, label='fietser 1')
 plt.plot(t,x_2,'b.', markersize=1, label='fietser 2')
 
@@ -71,17 +117,18 @@ plt.show()
 
 ```
 
-Wat op zou kunnen vallen is dat de snelheid in een cel constant gehouden wordt ($x_i = v_i\cdot\Delta t$), terwijl de snelheid tijdens het tijdsinterval $\Delta t$ toeneemt. De oplossing is dus een benadering van de exacte oplossing, maar door deze methode (Euler explicit forward), moeten we wel voorzichtig zijn met de grootte van het tijdsinterval.
-
-```{exercise}
-Maak het tijdsinterval $dt$ groter en vergelijk de afgelegde weg in de tien seconde. Wat gebeurt er met de afgelegde weg als we $dt$ groter maken? Is dat logisch vanuit gezien de natuurkunde? En gezien de methode van discretisatie? Leg uit.
-```
-
-
 <!-- Jouw antwoord hier  -->
 
 ```python
-%reset -f  #clears memory as we don't need it further down 
+print('''
+De benadering van de functie van de versnelling wordt slechter als het tijdsinterval groter wordt, omdat elk tijdsinterval zo groot is, loopt de acceleratie achter op de werkelijke acceleratie.
+''')
+print(f"\n Het verschil in dit voorbeeld tussen de twee waardes is: {np.abs(max_x_tweede_fiets_klein_interval_model-max_x_tweede_fiets_groot_interval_model)} meter")
+```
+
+```python
+#clears memory as we don't need it further down 
+%reset -f
 ```
 
 ## Naar een deeltjesmodel
@@ -90,6 +137,8 @@ In Q2 werken we aan een deeltjes model. Dat model bestaat uiteindelijk uit een s
 Een *class* is een blauwdruk voor het creëren van objecten (zoals deeltjes, atomen, planeten, auto's, studenten... noem maar op!). Het stelt je in staat om data (zoals positie, massa) en gedrag (zoals bewegen, botsen) te bundelen tot één overzichtelijk geheel. Precies wat we nodig hebben. Laten we de anatomie van een deeltje creëren.
 
 ```python
+import numpy as np
+import matplotlib.pyplot as plt
 # Definieer een class voor een deeltje. 
 # Een class beschrijft alleen het type eigenschappen dat een ding heeft, bijvoorbeeld: in de beschrijving van de class zeg je:
 # - een deeltje heeft een positie.
@@ -181,6 +230,7 @@ Voorspel en controleer vervolgens met onderstaande code.
 ```
 
 ```python
+#Range of [0,1,2,3] for each element one particle with that x value and all y values are 0
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -230,6 +280,17 @@ En als je wilt gaan voor een uitdaging:
 
 ```python
 ### YOUR CODE HERE ###
+tien_deeltjes_array=[]
+for nieuw_deeltje_index in range(10):
+    start_positie_x=nieuw_deeltje_index
+    random_snelheid_x,random_snelheid_y = np.random.uniform(-5,5),np.random.uniform(-5,5)
+    tien_deeltjes_array.append(ParticleClass(m=1.0, v=[random_snelheid_x, random_snelheid_y], r=[start_positie_x, 0.0],R=1.0))
+dt=1
+plt.figure()
+for index,deeltje in enumerate(tien_deeltjes_array):
+    deeltje.update_position(dt)
+    plt.plot(deeltje.r[0],deeltje.r[1],'k.')
+plt.show()
 ```
 
 Onze simulaties worden snel “zwaar”. Er moeten veel berekeningen gedaan worden en dat kost nu eenmaal tijd. Nu is het wel zo dat sommige berekeningen meer tijd kosten dan anderen. Om te kijken of een stukje code geoptimaliseerd kan worden, moeten we een timer maken. Dat kan met onderstaande code:
@@ -249,7 +310,12 @@ for i in range(N):
 eind = time.time()
 lengte = eind - start
 
-print("Dit kostte ", lengte, "seconde!")
+print("De methode met de for loop kostte ", lengte, "seconde!")
+
+start_random_rand=time.time()
+np.random.rand(N)
+einde_random_rand=time.time()
+print("De methode met de for loop kostte ", einde_random_rand-start_random_rand, "seconde!")
 ```
 
 Idealiter draaien we de bovenstaande code een aantal keer zodat we een goede schatting hebben van de rekentijd.
@@ -300,6 +366,8 @@ Je zou wel in staat moeten zijn de code te lezen.
 In de onderstaande cell maken we de ParticleClass aan, en geven we enkele parameters van onze simulatie op.
 
 ```python
+#clears memory as we don't need it further down 
+%reset -f
 # Importeren van libraries
 import numpy as np
 import matplotlib.pyplot as plt
@@ -403,7 +471,7 @@ def init():
     dot.set_data([], [])
     return dot,
 
-# Update function for each frame
+# # Update function for each frame
 def update(frame):
     particle.update_position()
     dot.set_data([particle.r[0]], [particle.r[1]])
@@ -433,6 +501,15 @@ def update(frame):
     particle.update_position()
     dot.set_data([particle.r[0]], [particle.r[1]])
 ### YOUR CODE HERE ###
+    if particle.r[0] > 10:
+        particle.r[0]=-10
+    if particle.r[0] < -10:
+        particle.r[0]=10
+        
+    if particle.r[1] > 10:
+        particle.r[1]=-10
+    if particle.r[1] < -10:
+        particle.r[1]=10
     return dot,         
 ```
 
@@ -449,6 +526,14 @@ def update(frame):
     particle.update_position()
     dot.set_data([particle.r[0]], [particle.r[1]])
 ### YOUR CODE HERE ###
+    if particle.r[0] > 10:
+        particle.v[0]=-1*particle.v[0]
+    if particle.r[0] < -10:
+        particle.v[0]=-1*particle.v[0]
+    if particle.r[1] > 10:
+        particle.v[1]=-1*particle.v[1]
+    if particle.r[1] < -10:
+        particle.v[1]=-1*particle.v[1]
     return dot,
 ```
 
@@ -464,7 +549,7 @@ dt = 0.1         # time step
 num_steps = 500  # number of time steps
 
 ### YOUR CODE HERE ###
-
+particle = ParticleClass(m=1.0, v=[5.0, 3], r=[0.0, 0.0],R=1.0)
 # Create the figure and axis
 fig, ax = plt.subplots()
 ax.set_xlim(-10, 10)
@@ -487,6 +572,14 @@ def update(frame):
     particle.update_position()
     dot.set_data([particle.r[0]], [particle.r[1]])
     ### YOUR CODE HERE ###
+    if particle.r[0] > 10:
+        particle.v[0]=-1*particle.v[0]
+    if particle.r[0] < -10:
+        particle.v[0]=-1*particle.v[0]
+    if particle.r[1] > 10:
+        particle.v[1]=-1*particle.v[1]
+    if particle.r[1] < -10:
+        particle.v[1]=-1*particle.v[1]
     return dot,
 
 # Create animation
