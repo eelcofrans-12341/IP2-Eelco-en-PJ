@@ -81,7 +81,8 @@ Maak het tijdsinterval $dt$ groter en vergelijk de afgelegde weg in de tien seco
 <!-- Jouw antwoord hier  -->
 
 ```python
-%reset -f  #clears memory as we don't need it further down 
+#clears memory as we don't need it further down 
+%reset -f  
 ```
 
 ## Naar een deeltjesmodel
@@ -97,6 +98,8 @@ Een *class* is een blauwdruk voor het creëren van objecten (zoals deeltjes, ato
 # Merk op dat de class zelf geen deeltje is! 
 # Een object dat tot een bepaalde class behoort, wordt een instant van die class genoemd. 
 # Je kunt meerdere instants van een class hebben.
+
+import numpy as np
 
 class ParticleClass:
     def __init__(self, m, v, r, R):
@@ -170,7 +173,7 @@ for start_x in range(4):
 
 print("Hoe het array eruit ziet volgens python: " + str(particle_array))
 print("Hoe een element van het array eruit ziet volgens python: " + str(particle_array[0]))
-print("Hoe een eigenschap (in dit geval: 'r') van het element van het array eruit ziet volgens python: " + str(particle_array[0].r))
+print("Hoe een eigenschap (in dit geval: 'r') van het element van het array eruit ziet volgens python: " + str(particle_array[1].r))
 ```
 
 ```{exercise} Voorspel
@@ -229,7 +232,21 @@ En als je wilt gaan voor een uitdaging:
 ```
 
 ```python
-### YOUR CODE HERE ###
+tien_deeltjes = []
+hoeveel_deeltjes = 10
+rng = np.random.default_rng()
+
+for start_x in range(hoeveel_deeltjes):
+    tien_deeltjes.append(ParticleClass(m=1.0, v=[rng.integers(-5, 6), 0], r=[start_x, 0.0],R=1.0))
+
+for particle, particle_object in enumerate(tien_deeltjes):
+    print("Deeltje " + str(particle) + ", huidige positie: " + str(particle_object.r))
+    print("oproepen van de functie 'update_position' met dt = 1.0 second ")
+    particle_object.update_position(1.0)
+    print("Volgende positie " + str(particle_object.r))
+    if particle < len(particle_array) - 1:
+        print("Naar het volgende deeltje \n")
+
 ```
 
 Onze simulaties worden snel “zwaar”. Er moeten veel berekeningen gedaan worden en dat kost nu eenmaal tijd. Nu is het wel zo dat sommige berekeningen meer tijd kosten dan anderen. Om te kijken of een stukje code geoptimaliseerd kan worden, moeten we een timer maken. Dat kan met onderstaande code:
@@ -240,11 +257,9 @@ import numpy as np
 
 start = time.time()
 
-array = np.array([])
-N = int(1e5)
-
-for i in range(N):
-    array = np.append(array,np.random.rand(1))
+N = int(1e9)
+# Maak de array direct aan met N elementen in één keer
+array = np.random.rand(N)
 
 eind = time.time()
 lengte = eind - start
@@ -336,7 +351,7 @@ We willen de beweging van dat deeltje straks bestuderen en moeten dus een plot m
 ```python
 # Creeer een figuur en de assen
 fig, ax = plt.subplots()
-ax.set_xlim(-10, 10)
+ax.set_xlim(-10, 50)
 ax.set_ylim(-10, 10)
 ax.set_aspect('equal')
 ax.set_title("Animatie")
@@ -432,7 +447,7 @@ Controleer je eigen antwoord door de functie hierboven even te vervangen door de
 def update(frame):
     particle.update_position()
     dot.set_data([particle.r[0]], [particle.r[1]])
-### YOUR CODE HERE ###
+    if 
     return dot,         
 ```
 
