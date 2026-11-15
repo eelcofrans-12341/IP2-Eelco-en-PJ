@@ -1127,7 +1127,7 @@ Pas de bovenstaande code aan zodat $m_1 = 1$ en $m_2 = 50$. Run de code en geef 
 
 
 ```python tags=["NB1_eindantwoord"]
-#num_botsingen = ...
+num_botsingen =3141
 ### YOUR CODE HERE ###
 import numpy as np
 import matplotlib.pyplot as plt
@@ -1222,6 +1222,7 @@ def update(frame):
 
 for i in range(1000000):
     update(i)
+num_botsingen=counter
 print(counter)
 # Create animation
 # ani = FuncAnimation(fig, update, frames=range(200), init_func=init, blit=True, interval=50)
