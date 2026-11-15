@@ -861,6 +861,9 @@ Jouw antwoord.
 
 ```python tags=["NB1_botsingsvoorwaarde"]
 # Define a class for a particle
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 
 # Maken van de class met botsing
 class ParticleClass:
@@ -875,6 +878,9 @@ class ParticleClass:
 
     def collide_detection(self, other):
         ### YOUR CODE HERE ###
+        dx = np.abs(self.r[0] - other.r[0])
+        dy = np.abs(self.r[1] - other.r[1])
+        rr = self.R + other.R
         return  dx**2+dy**2 < rr**2 
 ```
 
@@ -927,8 +933,11 @@ def update(frame):
     # botsing tussen de deeltjes onderling
     if particleA.collide_detection(particleB):
         ### YOUR CODE HERE ###
-
-
+        #volledige elastische botsing
+        new_velocityA = (((particleA.m-particleB.m)*particleA.v)+2*(particleB.m)*(particleB.v))/(particleA.m+particleB.m)
+        new_velocityB = (((particleB.m-particleA.m)*particleB.v)+2*(particleA.m)*(particleA.v))/(particleA.m+particleB.m)
+        particleA.v = new_velocityA
+        particleB.v = new_velocityB
     # botsing met de wand
     if particleA.r[0]**2>100: 
         particleA.v[0] = -particleA.v[0]
