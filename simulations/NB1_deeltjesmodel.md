@@ -1079,7 +1079,7 @@ class ParticleClass:
 
 # Simulation parameters
 dt = 0.1         # time step
-num_steps = 200  # number of time steps
+num_steps = 300  # number of time steps
 m1 = 1.0
 m2 = 50
 
