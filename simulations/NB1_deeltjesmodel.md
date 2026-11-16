@@ -1100,6 +1100,7 @@ ax.set_ylabel("y")
 dot, = ax.plot([], [], 'ro', markersize=10); # semicolon to suppress output
 
 counter = 0
+num_botsingen = 0
 
 # Create the particle as a red dot
 dotA, = ax.plot([], [], 'ro', markersize=10)
@@ -1115,6 +1116,7 @@ def init():
 # Update function for each frame
 def update(frame):
     global counter
+    global num_botsingen
     particleA.update_position()
     particleB.update_position()
 
