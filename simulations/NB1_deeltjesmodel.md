@@ -1152,6 +1152,7 @@ def update(frame):
 
     if frame == num_steps-2:
         print('final collision count is:', counter)
+        num_botsingen = counter
 
     return dot, counter_text
 
