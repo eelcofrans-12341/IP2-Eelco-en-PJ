@@ -120,6 +120,45 @@ plt.show()
 <!-- Jouw antwoord hier  -->
 
 ```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Nieuwe beginwaarden
+dt_nieuw = 0.25*4          #s
+t_e = 10                   #s
+N = int(t_e/dt_nieuw)+1
+t = np.arange(0,t_e+dt_nieuw,dt_nieuw) #s
+
+# fietser 1
+x_1 = np.zeros(N)          #m     maakt array van lengte N met alleen maar waarde 0.
+v_1 = 5                    #m/s
+
+# fietser 2
+x_2 = np.zeros(N)          #m     
+v_2 = np.zeros(N)          #m/s     
+a_2 = .5                   #m/s^2     
+
+# Uitvoeren van de simulatie
+for i in range(0,N-1):
+    x_1[i+1] = x_1[i] + v_1*dt_nieuw
+    
+    x_2[i+1] = x_2[i] + v_2[i]*dt_nieuw
+    v_2[i+1] = v_2[i] + a_2*dt_nieuw
+
+# Plotten van de gegevens.    
+plt.figure()
+
+plt.xlabel('$t$(s)')
+plt.ylabel('$x$(m)')
+max_x_tweede_fiets_groot_interval_model=np.max(x_2)
+plt.axhline(y=max_x_tweede_fiets_groot_interval_model, linestyle='--')
+plt.plot(t,x_1,'r.', markersize=1, label='fietser 1')
+plt.plot(t,x_2,'b.', markersize=1, label='fietser 2')
+
+plt.show()
+```
+
+```python
 print('''
 De benadering van de functie van de versnelling wordt slechter als het tijdsinterval groter wordt, omdat elk tijdsinterval zo groot is, loopt de acceleratie achter op de werkelijke acceleratie.
 ''')
@@ -1147,10 +1186,10 @@ class ParticleClass:
         return np.linalg.norm(self.r - other.r) <= (self.R + other.R)
 
 # Simulation parameters
-dt = 0.0001         # time step
+dt = 0.000001         # time step
 num_steps = 530  # number of time steps
 m1 = 1.0
-m2 = 1000000.0
+m2 = 100000000.0
 
 particleA = ParticleClass(m=m1, v=[0, 0], r=[-4.0, 0.0],R=0.45)  
 particleB = ParticleClass(m=m2, v=[-1, 0], r=[-2.0, 0.0],R=0.45)  
@@ -1220,7 +1259,7 @@ def update(frame):
 
     return dot, counter_text
 
-for i in range(1000000):
+for i in range(100000000):
     update(i)
 num_botsingen=counter
 print(counter)
