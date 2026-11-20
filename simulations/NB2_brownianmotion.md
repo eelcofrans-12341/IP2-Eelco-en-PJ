@@ -49,6 +49,27 @@ Als model gaan we uit van een deel van het volume van een fietsband die onder ee
 
 ```{solution} ex-recap-1
 ### YOUR CODE HERE ###
+T=293.15
+
+R̄=8.314
+
+Kb=1.38*10**-23
+
+p=10**6
+
+N=1
+
+pv=NTR̄/M
+
+R̄=Na*Kb
+
+M=Na * Aantal_moleculen
+
+V=(Kb*N*T)/p
+
+V=1.59339*10^-9
+
+Dat komt overeen met 1.6 nanometer zoals dat in de opdracht staat
 ```
 
 De simulatie die we gaan maken bevat maar twee dimensies. We kunnen het oppervlak per deeltje in deze simulatie daarom kiezen als het zojuist berekende $V_\text{molecuul}^{2/3}$.
@@ -69,6 +90,25 @@ Ook deze heb je hierna nodig.
 
 ```{solution} ex-recap-2
 ### YOUR CODE HERE ###
+v= sqrt(2*(1/m)*(f/2)*Kb*T)
+
+f=2
+
+Kb=1.38*10**-23
+
+T=293.15
+
+M=m*Na
+
+Na=6.02214076*10**23
+
+M=0.029kg/mol
+
+m= M/Na
+
+m= 3.81556*10**-26
+
+v=409.9 meter per seconden
 ```
 
 ```{exercise} Radius
@@ -78,6 +118,7 @@ In de python cell hieronder staan enkele waarden gegeven. Het aantal deeltjes $N
 
 ```{solution} ex-recap-3
 ### YOUR CODE HERE ###
+Er is geen vraag gesteld waar een antwoord op gegeven kan worden
 ```
 
 ```{exercise} DT
@@ -88,11 +129,12 @@ Bekijk de waarde van `DT`. Hoe zorgt deze waaarde ervoor dat het onwaarschijnlij
 Onze simulatie modelleert dus een klein systeem zonder rekening te houden met de kracht tussen de luchtmoleculen. Je zult zien dat we toch al behoorlijk wat van de processor vragen om deze berekeningen te doen. Om een meer realistische modelsimulatie te maken is daarom een serieuze uitdaging, die veel wiskunde en programmeerervaring vraagt. Op dit ogenblik wordt dit bijvoorbeeld gevraagd bij een van de eerste opdrachten van het vak 'Computational Physics' van de master Applied Physics. 
 
 ```python tags=["NB2_init"] editable=true slideshow={"slide_type": ""}
-BOX_SIZE_0 = 10                # Hoogte en lengte startvolume
-N = 40                         # Aantal deeltjes
-V_0 = 1                        # Startsnelheid van deeltjes
-RADIUS = 0.3                   # Straal van moleculen
-DT = 0.1 * RADIUS / V_0        # Tijdstap om geen botsing te missen
+BOX_SIZE_0 = 10          #meter               # Hoogte en lengte startvolume
+N = 40                   #geen eenheid        # Aantal deeltjes
+V_0 = 1                  #meter per seconden  # Startsnelheid van deeltjes
+RADIUS = 0.3             #meter               # Straal van moleculen
+DT = 0.1 * RADIUS / V_0  #seconden            # Tijdstap om geen botsing te missen
+#Omdat DT veel kleiner is dan de radius is de kans klein dat er een botsing wordt gemist.
 ```
 
 ### Particle class
@@ -183,8 +225,19 @@ Leg uit dat d.m.v. onderstaande code de deeltjes allemaal dezelfde snelheid hebb
 ```
 
 ```{solution} ex-recap-5
-Jouw antwoord hier...
-### YOUR CODE HERE ###
+Jouw antwoord hier:
+
+V^2 =Vx^2 + Vy^2 
+
+Vy = sqrt(V^2 - Vx^2)
+
+Deze vergelijking zorgt ervoor dat elke Vy op zo'n manier aansluit op Vx dat de totale snelheid altijd V0 is.
+
+Wat de positie betreft:
+
+De code pakt een positie tussen de ene en de andere kant van de doos en sommeert (±) deze met de radius om er voor te zorgen dat een deel van het luchtdeeltje niet uit de doos steekt.
+
+De variable pos is een tuple die twee onafhankelijke start posities krijgt door het laatste argument van de np.random.uniform method.
 ```
 
 ```python tags=["NB2_init"] editable=true slideshow={"slide_type": ""}
@@ -210,7 +263,8 @@ Leg uit hoe er in onderstaande code wordt voorkomen dat de botsing tussen twee d
 
 ```{solution} ex-recap-6
 Jouw antwoord hier...
-### YOUR CODE HERE ###
+
+
 ```
 
 ```python editable=true slideshow={"slide_type": ""} tags=["NB2_init"]
