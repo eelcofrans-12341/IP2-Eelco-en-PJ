@@ -411,7 +411,7 @@ ax.set_xlabel("x")
 ax.set_ylabel("y")
 
 # Create the particle as a red dot
-dot, = ax.plot([], [], 'ro', markersize=particle.R)
+dot, = ax.plot([], [], 'ro', markersize=10)
 
 # Initialization function for animation
 def init():
@@ -422,9 +422,9 @@ def init():
 def update(frame):
     particle.update_position()
     dot.set_data([particle.r[0]], [particle.r[1]])
-    if particle.r[0] > 9.95 or particle.r[0] < -9.95:
-        particle.v = -1*particle.v
-    return dot,
+    if particle.r[0] > 10:
+        particle.r[0] = -10
+    return dot,         
 # Create animation
 ani = FuncAnimation(fig, update, frames=range(200), init_func=init, blit=True, interval=50)
 
