@@ -1079,7 +1079,7 @@ class ParticleClass:
 
 # Simulation parameters
 dt = 0.1         # time step
-num_steps = 200  # number of time steps
+num_steps = 300  # number of time steps
 m1 = 1.0
 m2 = 50
 
@@ -1100,6 +1100,7 @@ ax.set_ylabel("y")
 dot, = ax.plot([], [], 'ro', markersize=10); # semicolon to suppress output
 
 counter = 0
+num_botsingen = 0
 
 # Create the particle as a red dot
 dotA, = ax.plot([], [], 'ro', markersize=10)
@@ -1115,6 +1116,7 @@ def init():
 # Update function for each frame
 def update(frame):
     global counter
+    global num_botsingen
     particleA.update_position()
     particleB.update_position()
 
@@ -1152,6 +1154,7 @@ def update(frame):
 
     if frame == num_steps-2:
         print('final collision count is:', counter)
+        num_botsingen = counter
 
     return dot, counter_text
 
