@@ -67,7 +67,7 @@ M=Na * Aantal_moleculen
 
 V=(Kb*N*T)/p
 
-V=1.59339*10^-9
+lengte rib = V^1/3 =1.59339*10^-9
 
 Dat komt overeen met 1.6 nanometer zoals dat in de opdracht staat
 ```
@@ -106,7 +106,7 @@ M=0.029kg/mol
 
 m= M/Na
 
-m= 3.81556*10**-26
+m= 4.815563295*10**-26 kg
 
 v=409.9 meter per seconden
 ```
@@ -129,10 +129,10 @@ Bekijk de waarde van `DT`. Hoe zorgt deze waaarde ervoor dat het onwaarschijnlij
 Onze simulatie modelleert dus een klein systeem zonder rekening te houden met de kracht tussen de luchtmoleculen. Je zult zien dat we toch al behoorlijk wat van de processor vragen om deze berekeningen te doen. Om een meer realistische modelsimulatie te maken is daarom een serieuze uitdaging, die veel wiskunde en programmeerervaring vraagt. Op dit ogenblik wordt dit bijvoorbeeld gevraagd bij een van de eerste opdrachten van het vak 'Computational Physics' van de master Applied Physics. 
 
 ```python tags=["NB2_init"] editable=true slideshow={"slide_type": ""}
-BOX_SIZE_0 = 10          #meter               # Hoogte en lengte startvolume
+BOX_SIZE_0 = 10          #nano meter               # Hoogte en lengte startvolume
 N = 40                   #geen eenheid        # Aantal deeltjes
-V_0 = 1                  #meter per seconden  # Startsnelheid van deeltjes
-RADIUS = 0.3             #meter               # Straal van moleculen
+V_0 = 1                  #nano meter per seconden  # Startsnelheid van deeltjes
+RADIUS = 0.3             #nano meter               # Straal van moleculen
 DT = 0.1 * RADIUS / V_0  #seconden            # Tijdstap om geen botsing te missen
 #Omdat DT veel kleiner is dan de radius is de kans klein dat er een botsing wordt gemist.
 ```
@@ -264,7 +264,7 @@ Leg uit hoe er in onderstaande code wordt voorkomen dat de botsing tussen twee d
 ```{solution} ex-recap-6
 Jouw antwoord hier...
 
-
+De code zorgt ervoor dat per deeltje wordt gekeken of het botst met een ander deeltje. Als een deelte A is gecontrolleerd of hij botst met deeltje B, dan hoef je daarna niet meer te controleren of deeltje B botst met A. De code zorgt hier ook voor: de j loop wordt namelijk steeds korter namate i groter wordt. Met behulp van i+1 krijg je dat i niet met i wordt vergeleken.
 ```
 
 ```python editable=true slideshow={"slide_type": ""} tags=["NB2_init"]
@@ -374,9 +374,15 @@ for i in range(100):
     take_time_step(particles)
     # voeg de som van de kinetische energie in deze stap toe aan energy_tot 
     ### YOUR CODE HERE ###
-
+    timestep_tot_energy=0
+    for particle_instance in particles:
+        timestep_tot_energy+=particle_instance.kin_energy
+    energy_tot.append(timestep_tot_energy)
 # plot de figuur van de kinetische energie als functie van de tijd. 
 ### YOUR CODE HERE ###
+plt.figure()
+plt.plot(range(100),energy_tot, ".")
+
 ```
 
 ```{exercise} 
@@ -386,9 +392,19 @@ Als je heel nauwkeurig naar de waarde voor de totale kinetische energie kijkt, d
 
 ```{solution} ex-recap-8
 Jouw antwoord hier...
-### YOUR CODE HERE ###
+
+Bit errors. Alle deeltjes hebben zelf hele kleine orde van grootheid van de deeltjes. Al deze grootheden moeten worden opgeslagen in het voorgrond geheugen van de computer. Omdat de orde van grootheid van de waardes zo klein is, kost het veel bits om deze waardes te beschrijven. Soms heb je dan dat bepaalde waardes verkeerd worden afgerond door de computer waardoor de totale energie op een arbitrair tijdstip afwijkt van de echte totale energie.
 ```
 
+```python
+E = np.array(energy_tot)
+plt.figure()
+plt.plot(range(100), E - E[0]) #E[0] is de totale energie van de eerste iteratie
+plt.xlabel('tijdstap')
+plt.ylabel('E - E_0')
+plt.show()
+print(E[0])
+```
 
 Voor simulaties waarbij de kans op botsingen heel groot is (richting vloeistof), is er een handige methode om de snelheid van je simulatie op te voeren.
 In onderstaande code wordt daar een voorbeeld van gegeven.
@@ -555,13 +571,14 @@ v_0 = 1
 
 dt = 0.04
 
+
 # Aanmaken van deeltjes
 for i in range(N-1):
     vx = np.random.uniform(-v_0,v_0)
     vy = np.random.choice([-1, 1])*np.sqrt(v_0**2-vx**2)        
     pos = Box_length_0*np.random.uniform(-1,1,2)
     particles.append(ParticleClass(m=1.0, v=[vx, vy], r = pos, R=.5,c='blue')) 
-
+#een deeltje twintig keer zo zwaar als de andere deeltjes wordt toegevoegd aan de simulatie met een andere kleur
 particles.append(ParticleClass(m=20.0, v=[0, 0], r = [0, 0], R=.5,c='red')) 
 
 ```
@@ -575,6 +592,7 @@ Voeg voor deze regel goede metadata toe.
 
 ```{solution} ex-brownian-1
 ### YOUR CODE HERE ###
+een deeltje twintig keer zo zwaar als de andere deeltjes wordt toegevoegd aan de simulatie met een andere kleur
 ```
 
 
@@ -597,9 +615,9 @@ plt.ylim(-Box_length_0,Box_length_0)
 
 for particle, particle_object in enumerate(particles):
     plt.plot(particle_object.r[0],particle_object.r[1],color=particle_object.c,marker='.')
-    # plt.arrow(particle_object.r[0],particle_object.r[1], 
-    #           particle_object.v[0],particle_object.v[1], 
-    #           head_width=0.05, head_length=0.1, color='red')
+    plt.arrow(particle_object.r[0],particle_object.r[1], 
+              particle_object.v[0],particle_object.v[1], 
+              head_width=0.05, head_length=0.1, color='red')
 plt.show()
 
 ```
@@ -614,6 +632,8 @@ Hoe wordt er voor gezorgd dat de snelheid van elk deeltje gelijk is?
 
 ```{solution} ex-brownian-2
 ### YOUR CODE HERE ###
+
+De code maakt pijltjes die de snelheid van elk deeltje aangeven. De totale snelheid is voor elk deeltje gelijk doordat de totale snelheid v_0 als constant is gedefineerd. De x snelheid wordt willekeurig bepaald en de y snelheid wordt met behulp van pythagoras en de vooraf vastgestelde totale snelheid berekend. Vx en Vy zijn loodrecht componenten van Vtot.
 ```
 
 We gaan nu de functies van de simulatie weer aanroepen:
@@ -643,15 +663,17 @@ def particle_collision(p1: ParticleClass, p2: ParticleClass):
     p2.v += 2 * m1 / (m1 + m2) * dot_product / distance_squared * delta_r
 
 def handle_collisions(particles):
-    ### YOUR CODE HERE ###
     """ alle onderlinge botsingen afhandelen voor deeltjes in lijst """
+    ### YOUR CODE HERE ###
+    recorded_collisions=0
     num_particles = len(particles)
     for i in range(num_particles):
         for j in range(i+1, num_particles):
             if collide_detection(particles[i], particles[j]):
                 particle_collision(particles[i], particles[j])
                 ### YOUR CODE HERE ###
-
+                recorded_collisions+=1
+    return recorded_collisions
 ```
 
 In onderstaande code geven we de code voor de simulatie en volgen we de positie van het zware deeltje. 
@@ -662,12 +684,12 @@ track_x = []
 track_y = []
 
 ### YOUR CODE HERE ###
-
+#tracken licht deeltje
 ### YOUR CODE HERE ###
-
+licht_track_x = []
+licht_track_y = []
 for i in range(400):
     ### YOUR CODE HERE ###
-    
     for p in particles:        
         p.update_position()    # Update positie        
         p.boxcollision()         # Wandbotsing werkt per deeltje
@@ -675,15 +697,19 @@ for i in range(400):
     handle_collisions(particles)
 
     ### YOUR CODE HERE ###
-    
     track_x.append(particles[N-1].r[0])
     track_y.append(particles[N-1].r[1])
     
 ### YOUR CODE HERE ###
-
+    licht_track_x.append(particles[N-2].r[0])
+    licht_track_y.append(particles[N-2].r[1])
 plt.figure()
-plt.plot(track_x,track_y,'r')
+plt.xlabel("x")
+plt.ylabel("y")
+plt.plot(track_x,track_y,'r', label="zwaar deeltje (m=20)")
 ### YOUR CODE HERE ###
+plt.plot(licht_track_x,licht_track_y,'b', label="licht deeltje (m=1)")
+plt.legend()
 plt.show()
 ```
 
@@ -733,7 +759,7 @@ def update(frame):
         p.update_position()
         p.boxcollision()
 
-    handle_collisions(particles)
+    counter += handle_collisions(particles)
 
     botsingen.append(counter)
 
@@ -743,6 +769,8 @@ def update(frame):
 
     track_x2.append(particles[0].r[0])
     track_y2.append(particles[0].r[1])
+
+    
 
     # ---- update alle deeltjes ----
     xs = [p.r[0] for p in particles]
@@ -783,6 +811,10 @@ ani.save("deeltjes.gif", writer="pillow", fps=20)
 
 ```{solution} ex-brownian-3
 ### YOUR CODE HERE ###
+- Gedaan
+- Gedaan
+- Beide volgen willekeurige paden. Verder valt het op dat het zware deeltje veel meer afbuigt dan het zware deeltje
+- De willekeurigheid van de paden
 ```
 
 
@@ -797,6 +829,12 @@ Plot hieronder het aantal botsingen als functie van de tijd.
 
 ```python
 ### YOUR CODE HERE ###
+print(f"Hoeveelheid botsingen: {sum(botsingen)}")
+plt.figure()
+plt.xlabel("tijdstap")
+plt.ylabel("hoeveelheid botsingen per tijdstap")
+plt.plot(range(len(botsingen)),botsingen,".k")
+plt.show()
 ```
 
 ```{warning} 🌶 Let op!
