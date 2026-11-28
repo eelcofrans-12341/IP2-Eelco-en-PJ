@@ -221,10 +221,17 @@ Schrijf een functie die de temperatuur van het gas in onze simulatie bepaalt:
 ```
 
 ```python tags=["NB3_tempfun"]
+k_b = 1.380649*10**-23
+
 def temperature(particles) -> float:
     temp = 0.0 
-    ### YOUR CODE HERE ###
+    velocities = np.array([p.v for p in particles])
+    speeds_squared = np.sum(velocities**2, axis=1)
+    avg_speed = np.mean(speeds_squared)*410**2
+    temp = avg_speed*0.5*(k_b**-1)*(particles[0].m*4.28*10**-26) #assumes mass is the same for all
     return temp
+    # de waardes komen van NB2
+print(temperature(particles)) #in kelvin
 ```
 
 <!-- #region tags=[] -->
@@ -237,22 +244,28 @@ Gebruik deze functie om een simulatie te maken waarin je de temperatuur als func
 
 ```python tags=["NB3_check_const_temp"]
 # ruimte voor uitwerking
+steps = 100 #number of steps
 
 particles = []
-temperatures = np.zeros(100, dtype=float)
-times = np.linspace(1, 100, 100)
+temperatures = np.zeros(steps, dtype=float)
+times = np.linspace(1, steps, steps)*DT
 
 create_particles(particles)
-for i in range(100):
+
+for i in range(steps):
     take_time_step(particles)
     # vastleggen van temperatuur per tijdstap
-    ### YOUR CODE HERE ###
+    temperatures[i] = temperature(particles)
+
+
 
 plt.figure()
 plt.xlabel('Time')
 plt.ylabel('Temperature')
 # plotten van tijd tegen temperatuur
-### YOUR CODE HERE ###
+plt.xlabel('Tijd [s]')
+plt.ylabel('Temperatuur [K]')
+plt.plot(times, temperatures, 'r-', label='Gas temperatuur')
 plt.show()
 ```
 
@@ -305,6 +318,8 @@ Programmeurs proberen het aantal globale variabelen te reduceren tot een minimum
 impulse_outward = 0.0
 pressure = 0.0
 
+
+
 def top_down_collision(particle: ParticleClass):
     global impulse_outward
     if abs(particle.r[1]) + particle.R > BOX_SIZE_0 / 2:                       # bepaal of deeltje buiten de doos is
@@ -343,11 +358,18 @@ Wat zou je als verklaring hiervoor geven?
 <!-- #endregion -->
 
 ```python tags=["NB3_plot_pres"]
-particles = []
-pressures = np.zeros(100, dtype=float)
-times = np.linspace(1, 100, 100)
+steps = 100
 
-### YOUR CODE HERE ###
+
+particles = []
+pressures = np.zeros(steps, dtype=float)
+times = np.linspace(1, steps, steps)
+
+create_particles(particles)
+
+for i in range(steps):
+    take_time_step(particles)
+    pressures[i] = pressure
 
 plt.figure()
 plt.xlabel('Time [step]')
@@ -377,7 +399,7 @@ Zet je initiële waarden weer terug.
 
 ```python tags=[]
 ### YOUR CODE HERE ###
-
+# ik heb dit gedaan door de eerdere cellen te verander naar N = 400 en de lengtes van de doos keer wortel 10 te doen
 ```
 
 Een goedkoper alternatief bestaat uit het middelen van de druk over de tijd.
@@ -408,7 +430,7 @@ def handle_walls(particles):
     for p in particles:
         left_right_collision(p)
         top_down_collision(p)    
-    alpha = 0.1
+    alpha = 0.05
     pressure = alpha * impulse_outward / (4 * BOX_SIZE_0 * DT) + (1-alpha) * pressure # omtrek volume is oppervlak (2D sim)
 ```
 
@@ -425,7 +447,18 @@ times = np.linspace(1, N_steps, N_steps)
 
 create_particles(particles)
 
-### YOUR CODE HERE ###
+for i in range(N_steps):
+    take_time_step(particles)
+    pressures[i] = pressure
+
+plt.figure()
+plt.xlabel('Time [step]')
+plt.ylabel('Pressure [a.u.]')
+
+plt.plot(times, pressures, '-r')
+
+plt.show()
+
 
 ```
 
@@ -437,7 +470,7 @@ We kunnen de gevonden druk nu wel uitdrukken in SI-eenheden met behulp van de vo
 ```
 
 ```{solution} ex-druktemp-7
-### YOUR CODE HERE ###
+Omdat ons model niet de correcte units gebruikt voor alle dingen zoals massa die stukken kleiner is en de snelheid die in het echt een stuk hoger is.
 ```
 
 
@@ -449,7 +482,7 @@ Leg op basis van de vormen die je ziet en de bijbehorende wiskunde uit dat dit e
 ```
 
 ```{solution} ex-druktemp-8
-### YOUR CODE HERE ###
+Omdat elk druk meting alle oude druk metingen ook meeneemt met de allerelaatse als (1-alpha) tot the macht van de hoeveelste meting dit is. Dus exponentiel/
 ```
 
 
@@ -480,6 +513,17 @@ Controleer of je uitkomst overeenkomt met de theorie en verifieer hiermee de cod
 
 ```python
 ### YOUR CODE HERE ###
+velocities = np.array([p.v for p in particles])
+speeds_squared = np.sum(velocities**2, axis=1)
+avg_v_sq = np.mean(speeds_squared)
+
+m = particles[0].m
+A = BOX_SIZE_0 * BOX_SIZE_0
+p_theory = (m * N / A) * (avg_v_sq / 2)
+p_simulated = np.mean(pressures)
+
+print(p_theory)
+print(p_simulated)
 ```
 
 In [de formule voor de tweedimensionale druk](2d_pressure) kan je de structuur van de ideale gaswet herkennen. 
